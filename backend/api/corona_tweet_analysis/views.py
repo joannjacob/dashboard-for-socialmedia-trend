@@ -90,6 +90,8 @@ class SpamCountView(generics.ListCreateAPIView):
             spam_users = tweet.spam_users
             spam_count = tweet.spam_count
             is_spam = False
+            if not request.user.is_active:
+                return send_response({'status': UNAUTHORIZED, 'data': 'Not an active user'})
             if request.user.email in spam_users:
                 return send_response({'status': BAD_REQUEST, 'data': 'You have already mark this as spam'})
             else:
