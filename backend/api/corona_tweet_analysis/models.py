@@ -1,37 +1,43 @@
 import datetime
-import mongoengine
-from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
-from mongoengine import fields, DynamicDocument, EmbeddedDocument, StringField, DateTimeField, IntField
+from django.db import models
+from django.contrib.postgres.fields import ArrayField, JSONField
+
+class Category(models.Model):
+    _id = models.CharField(primary_key=True, max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self._id
 
 
-class Category(DynamicDocument):
-    _id = fields.StringField(primary_key=True)
-    created_at = fields.DateTimeField(default=datetime.datetime.now)
+class TwitterData(models.Model):
+    text = models.TextField()
+    country = ArrayField(models.CharField(max_length=50),default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+    category = ArrayField(models.CharField(max_length=50), default=list)
+    hashtags = ArrayField(models.CharField(max_length=100), default=list)
+    spam_count = models.IntegerField(default=0)
+    is_spam = models.BooleanField(default=False)
+    spam_users = ArrayField(models.CharField(max_length=50), default=list)
+    url = models.CharField(max_length=150)
+
+    class Meta:
+        verbose_name = 'TwitterData'
+        verbose_name_plural = 'TwitterData'
+    
+
+# class Data(models.Model):
+#     name = models.CharField(max_length=100)
+#     new_cases = models.CharField(max_length=100)
+#     new_deaths = models.CharField(max_length=100)
+#     total_cases = models.CharField(max_length=100)
+#     total_deaths = models.CharField(max_length=100)
 
 
-class TwitterData(DynamicDocument):
-    text = fields.StringField(required=True)
-    country = fields.ListField(fields.StringField(),default=list)
-    created_at = fields.DateTimeField(default=datetime.datetime.now)
-    category = fields.ListField(fields.StringField(), default=list)
-    hashtags = fields.ListField(fields.StringField(), default=list)
-    spam_count = fields.IntField(default=0)
-    is_spam = fields.BooleanField(default=False)
-    spam_users = fields.ListField(fields.StringField(), default=list)
-    url = fields.StringField()
-    meta = {'allow_inheritance': True}
-
-
-class Data(EmbeddedDocument):
-    name = fields.StringField(required=True)
-    new_cases = fields.StringField(required=True)
-    new_deaths = fields.StringField(required=True)
-    total_cases = fields.StringField(required=True)
-    total_deaths = fields.StringField(required=True)
-
-
-class CoronaReport(DynamicDocument):
-    created_at = fields.DateTimeField(default=datetime.datetime.now)
-    data = fields.ListField(fields.EmbeddedDocumentField(Data), default=list)
-    meta = {'allow_inheritance': True}
+class CoronaReport(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    data = JSONField()
