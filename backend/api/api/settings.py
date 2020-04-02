@@ -144,6 +144,12 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.UserProfile'
 CORS_ORIGIN_ALLOW_ALL = True
 
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '4c74ca9f0f2d47'
+EMAIL_HOST_PASSWORD = 'f5629ec83640d4'
+EMAIL_PORT = 587
+
 INTERNAL_IPS = [
     # ...
     '127.0.0.1',
@@ -165,3 +171,4 @@ if DEBUG:
         'debug_toolbar.panels.redirects.RedirectsPanel',
         'debug_toolbar.panels.profiling.ProfilingPanel',
     ]
+
