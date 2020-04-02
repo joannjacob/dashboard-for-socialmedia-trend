@@ -1,6 +1,7 @@
 import mongoengine
 from json import loads
 from django.shortcuts import render
+from django.core.cache import caches
 from corona_tweet_analysis.utils.base_view import BaseViewManager
 from corona_tweet_analysis.utils.responses import send_response
 from corona_tweet_analysis.utils.constants import SUCCESS, FAIL, INVALID_PARAMETERS, BAD_REQUEST, UNAUTHORIZED
@@ -10,6 +11,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework import permissions, generics
 from rest_framework.response import Response
 from corona_tweet_analysis.serializers import TwitterDataSerializer, CategorySerializer
+
+cache = caches['default']
+cache.clear()
 
 class CategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
@@ -60,13 +64,20 @@ class TwitterDataView(generics.ListAPIView):
     serializer_class = TwitterDataSerializer
 
     def get(self, request, *args, **kwargs):
+        # cache_key = 'tweet_cache_key'
+        # # Time to live in seconds
+        # cache_time = 1800 
+        # result = cache.get(cache_key)
+        
         category = request.query_params.get('category')
         if category:
             category_obj = Category.objects(_id=category).first()
             if not category_obj:
                 return send_response({'status': INVALID_PARAMETERS, 'message':'Category not found'})
             else:
-                self.queryset = self.queryset(category=category).order_by('-created_at', '-_id')
+                if not result:
+                    self.queryset = self.queryset(category=category).order_by('-created_at', '-_id')
+                    # cache.set(cache_key, self.queryset, cache_time)
         return super().get(request, *args, **kwargs)
 
 

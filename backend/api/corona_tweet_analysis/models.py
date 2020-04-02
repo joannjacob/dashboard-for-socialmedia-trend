@@ -22,6 +22,10 @@ class TwitterData(DynamicDocument):
     url = fields.StringField()
     meta = {'allow_inheritance': True}
 
+# class EmbeddedDocumentField(fields.EmbeddedDocumentField):
+
+#     def db_type(self, connection):
+#         return "faketype"
 
 class Data(EmbeddedDocument):
     name = fields.StringField(required=True)
