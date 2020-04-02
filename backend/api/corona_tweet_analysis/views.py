@@ -1,7 +1,9 @@
 import mongoengine
 from json import loads
 from django.shortcuts import render
-from django.core.cache import caches
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from corona_tweet_analysis.utils.base_view import BaseViewManager
 from corona_tweet_analysis.utils.responses import send_response
 from corona_tweet_analysis.utils.constants import SUCCESS, FAIL, INVALID_PARAMETERS, BAD_REQUEST, UNAUTHORIZED
@@ -12,9 +14,9 @@ from rest_framework import permissions, generics
 from rest_framework.response import Response
 from corona_tweet_analysis.serializers import TwitterDataSerializer, CategorySerializer
 
-cache = caches['default']
-cache.clear()
+# cache.clear()
 
+@method_decorator(cache_page(60 * 1), name='dispatch')
 class CategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
