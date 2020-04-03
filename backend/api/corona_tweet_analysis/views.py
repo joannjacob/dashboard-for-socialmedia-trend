@@ -16,7 +16,7 @@ from corona_tweet_analysis.serializers import TwitterDataSerializer, CategorySer
 
 # cache.clear()
 
-@method_decorator(cache_page(60 * 1), name='dispatch')
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class CategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
